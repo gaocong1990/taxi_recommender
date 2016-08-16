@@ -1,0 +1,226 @@
+body, html,#map {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    margin:0;
+    font-family: "微软雅黑";
+}
+body, html,ul,li,div{
+    padding:0;
+    margin:0;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box; 
+    -webkit-box-sizing:border-box; 
+}
+input{
+    font-family: "微软雅黑"
+}
+@font-face {
+    font-family: 'icomoon';
+    src:    url('fonts/icomoon.eot?gw9jyd');
+    src:    url('fonts/icomoon.eot?gw9jyd#iefix') format('embedded-opentype'),
+        url('fonts/icomoon.ttf?gw9jyd') format('truetype'),
+        url('fonts/icomoon.woff?gw9jyd') format('woff'),
+        url('fonts/icomoon.svg?gw9jyd#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.icon-user:before {
+    font-size: 15px; 
+    content: "\e971";
+}
+.icon-truck:before {
+    font-size: 15px;    
+    content: "\e9b0";
+}
+.icon-three-bars:before {
+    font-size: 25px;
+    content: "\f05e";
+}
+
+.icon-compass:before {
+    line-height: 35px;
+    font-size: 25px;
+    content: "\e902";
+}
+.icon-map2:before {
+    line-height: 35px;
+    font-size: 20px;
+    content: "\e94c";
+}
+.icon-zoom-in:before {
+    line-height: 35px;
+    font-size: 20px;
+    content: "\e987";
+}
+.icon-zoom-out:before {
+    line-height: 35px;
+    font-size: 20px;
+    content: "\e988";
+}
+
+
+#nav{
+    width: 100%;
+    height: 9%;
+
+}
+#center{
+    width:100%;
+    height:9%;
+    background: #f2f2f2;
+}
+
+div.user{
+    width: 85%;
+    height: 100%;
+    float:left;
+}
+div.option{
+    position: relative;
+    width: 15%;
+    height: 100%;
+    float:left;
+    background: #f2f2f2;
+    text-align: center;
+    font-size: 10px;
+    border-bottom: #d4d4d4 solid 1px;
+    overflow: hidden;
+}
+.before{
+    display: none;
+    width: 0;
+    height: 0;
+    border: 18px solid;
+    position: absolute; 
+    bottom: 0px;
+    border-color: transparent transparent  rgb(180,180,180) transparent ;
+}
+ul{
+    list-style: none;
+    width: 100%;
+}
+ul.tab li{
+    float: left;
+    height: 100%;
+    background: #f2f2f2;
+    border-right: 1px solid #d4d4d4;
+    border-bottom: #d4d4d4 solid 1px;
+    width: 50%;
+    text-align: center;
+    font-size: 1em;
+    overflow: hidden;
+}
+
+a{
+    text-decoration: none;
+    display: block;
+}
+a:link{
+    color:black;
+}
+
+ul.tab li a:hover,div.option:hover,.current{
+    color: #4b8ff9;
+    background: #d1dcef;
+}
+
+#se-input-poi{
+    margin:5px;
+    margin-left: 13px;
+    width:65%;
+    height: 50%;
+}
+#se-btn{
+    height: 50%;
+    width: 20%;
+    margin-left: 13px;
+    font-family: "微软雅黑";
+    font-size: 0.9em;
+}
+.control{
+    height: 35px;
+    width: 35px;
+    background: rgba(255,255,255,.8);
+    -webkit-box-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+    border-radius: 3px;
+    position: absolute;
+    text-align: center;
+}
+.control:active{
+    background-color: gray;
+}
+.location{
+    bottom: 10px;
+    left: 10px;
+}
+.zoomout{
+    bottom: 10px;
+    right: 10px;
+}
+.zoomin{
+    bottom: 44px;
+    right: 10px;
+}
+.traffic{
+    bottom: 95px;
+    right: 10px;
+}
+.icon-zoom-in,.icon-zoom-out{
+    color: rgba(0,0,0,0.6);
+}
+
+ul.s li:hover{
+    color: yellow;
+    background: rgba(0,0,255,0.3);
+    cursor: pointer;
+}
+ul.s li{
+    padding-bottom: 10px;
+    padding-top: 10px;
+    padding-left: 20px;
+}
+div.setting{
+    display: none;
+    position: absolute;
+    right: 0;
+    width: 200px;
+    height:350px;
+    font-family: "微软雅黑";
+    background: rgba(210,210,210,0.8);
+    border: 1px solid gray;
+}
+
+#title{
+    padding:5px 0 5px 5px;
+    display: block;
+    font-size: 20px;
+    border-bottom: 1px solid black;
+}
+div.strag{
+    border-bottom: 1px solid black;
+}
+ul.param li{
+    padding-bottom: 10px;
+    padding-top: 10px;
+    margin-left: 15px;
+}
+ul.param li input{
+    width: 90px;
+    margin-left: 10px;
+}

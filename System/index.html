@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Recommendation</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" type="text/css" href="style/style.css"/>
+	<style type="text/css">
+		.infoBoxContent{width:125px;height:125px;border:1px solid blue;border-radius: 3px;}
+		#infoBoxTitle{width:125px;height:25px;background:rgba(20,30,200,0.5);font-size:17px;color:yellow;}
+		.infoBoxContent p {font-size: 14px; margin: 10px 0 0 6px;padding:0;font-weight: bolder;}
+	</style>
+	<script type="text/javascript" src='http://apps.bdimg.com/libs/jquery/1.6.4/jquery.min.js'></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=OlCcrxv2eOxEBZ1DdaxVs1uR"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/library/InfoBox/1.2//src/InfoBox_min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+		var h = $('#nav').height()-1;
+		$('div.user li a').css({
+			'lineHeight':h+'px'
+		});
+		$('div.option').css({
+			'lineHeight':h+'px'
+		});
+		$('span.icon-three-bars').css({
+			'lineHeight':h+'px'
+		});
+		$('div.setting').css({
+			'top':h+'px'
+		});
+		var w = $('div.option').width();
+		$('div.before').css({
+			'right':(w/2-18)+'px'
+		});
+		var centerHeight = $('#center').height();
+		$("#center").css({
+			'lineHeight':centerHeight + "px"
+		});
+		var map = new BMap.Map("map", {});         // Create Map object
+        map.centerAndZoom(new BMap.Point(116.38,39.91), 14);     // Init Map,set center and Zoom
+        map.enableScrollWheelZoom();     //enableScrollWheelZoom
+        //map.enableInertialDragging();
+        var currentPoint = new BMap.Point(116.38,39.91)
+        var myIcon = new BMap.Icon("images/navigation.png", new BMap.Size(38,40));
+        var marker = new BMap.Marker(new BMap.Point(116.38,39.91),{icon:myIcon});
+        map.addOverlay(marker);   
+        marker.enableDragging();
+        var circle = new BMap.Circle(currentPoint,800,{strokeColor:"#a4b2cc", strokeWeight:2, strokeOpacity:0.6,fillColor:"#4673cc",fillOpacity:0.2}); //创建圆
+        map.addOverlay(circle);
+        marker.addEventListener('click',function(event){
+        	//alert("hehe");
+        });
+        marker.addEventListener("dragend",function(){
+        	currentPoint = marker.getPosition();
+        });
+        marker.addEventListener("dragstart",function(){
+        	map.removeOverlay(circle);
+        });
+        $('div.zoomin').click(function(){
+			map.setZoom(map.getZoom() + 1);
+		});
+		$('div.zoomout').click(function(){
+			map.setZoom(map.getZoom() - 1);
+		});
+		var trafficSwitch = false;
+		var traffic = null; 	
+		$('div.traffic').click(function(){
+			if(!trafficSwitch){ 
+				traffic = new BMap.TrafficLayer();
+				map.addTileLayer(traffic);				
+				trafficSwitch = true;  
+			}else{
+				map.removeTileLayer(traffic); 
+				traffic = null; 
+				trafficSwitch = false;
+			}
+
+		});
+		$('div.option').click(function(){
+			$('div.setting').toggle("slow");
+			$('div.before').toggle("slow");
+			return false;
+		});
+
+		$('body').click(function(){
+			$('div.setting').hide("slow");
+			$('div.before').hide("slow");
+		});
+		$('ul.s li').click(function(event){
+			$(this).find('input:radio').attr('checked',true);
+		});
+		$('ul.tab li a').click(function(){
+			$('ul.tab li a').removeClass('current');
+			$(this).addClass('current');
+		});	
+		$('#se-btn').click(function(){
+			map.clearOverlays();
+			map.centerAndZoom(currentPoint, 15); 
+			newMarker = new BMap.Marker(currentPoint,{icon:myIcon});
+			newMarker.enableDragging();
+			map.addOverlay(newMarker);    //添加标注
+			newMarker.addEventListener("dragstart",function(){
+        		//map.removeOverlay(circle);
+        		map.removeOverlay(resultCircle);
+       		});
+			newMarker.addEventListener("dragend",function(){
+    			currentPoint = newMarker.getPosition();
+        	});
+			var resultCircle = new BMap.Circle(currentPoint,1000,{strokeColor:"#a4b2cc", strokeWeight:2, strokeOpacity:0.6,fillColor:"#4673cc",fillOpacity:0.2}); //创建圆
+       		map.addOverlay(resultCircle);
+       		curPt = {
+       			lng:currentPoint.lng,
+       			lat:currentPoint.lat
+       		};
+       		$.get("search.php",{searchPoint:curPt},function(result){
+       			var data = $.parseJSON(result);
+   			  	for (var i = 0; i < data.length; i++) {
+					var tmpMarker = new BMap.Marker(new BMap.Point(data[i].lng, data[i].lat));
+					(function(i){
+						tmpMarker.addEventListener('click',function(){
+							var dist = map.getDistance(this.getPosition(),currentPoint).toFixed(0);
+							var id = i+1;
+							var pro = (Math.random()*0.5+0.5).toFixed(2);
+							var fee = parseInt(Math.random()*40+20);
+							var html = "<div class='infoBoxContent'><div id='infoBoxTitle'>推荐点"+id+"</div><p>距离您："+dist+"米</p><p>上客概率："+pro+"</p><p>预期收益："+fee+"min</p></div>";
+							var infoBox = new BMapLib.InfoBox(map,html,{
+										boxStyle:{
+											background:"rgba(200,200,200,0.6)"
+											,width: "125px"
+											,height: "125px"
+										}
+										,closeIconMargin: "1px 1px 0 0"
+										,closeIconUrl: "images/close.png"
+										,enableAutoPan: true
+										,align: INFOBOX_AT_TOP
+									});
+							infoBox.open(this);
+							document.getElementById('infoBoxTitle').addEventListener("touchstart",function(){
+								infoBox.close();
+							});
+							map.addEventListener("touchstart",function(){
+								infoBox.close();
+							}
+							);
+						});
+					})(i);
+					map.addOverlay(tmpMarker);
+   			  	}
+
+       		});
+		});
+
+
+
+	var ac = new BMap.Autocomplete({   //建立一个自动完成的对象
+			"input" : "se-input-poi",
+			"location" : map
+	});
+
+	ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+		var str = "";
+		var _value = e.fromitem.value;
+		var value = "";
+		if (e.fromitem.index > -1) {
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+		
+		value = "";
+		if (e.toitem.index > -1) {
+			_value = e.toitem.value;
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+		document.getElementById("searchResultPanel").innerHTML = str;
+	});
+
+	var myValue;
+	ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+		var _value = e.item.value;
+		myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		document.getElementById("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+		setPlace();
+	});
+
+	function setPlace(){
+		map.clearOverlays();    //清除地图上所有覆盖物
+		function myFun(){
+			currentPoint = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+			map.centerAndZoom(currentPoint, 13);
+			newMarker = new BMap.Marker(currentPoint,{icon:myIcon});
+			newMarker.enableDragging();
+			map.addOverlay(newMarker);    //添加标注
+			newMarker.addEventListener("dragend",function(){
+        	currentPoint = newMarker.getPosition();
+        });
+		}
+		var local = new BMap.LocalSearch(map, { //智能搜索
+		  onSearchComplete: myFun
+		});
+		local.search(myValue);
+	};
+    })
+	</script>
+</head>
+<body>
+	<div id="nav">
+		<div class="user">
+			<ul class="tab">
+				<li>
+					<a href="javascript:void(0)">
+						<i class="icon-truck"></i> 司机
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0)">
+						<i class="icon-user"></i> 乘客
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div class="option">
+			<div class="before"></div>
+			<span class="icon-three-bars"></span>
+		</div>
+	</div>
+	<div id="center">
+		<input type="text"  id="se-input-poi" placeholder="请输入查询地点或手动定位" >
+		<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:65%;height:auto; display:none;"></div>
+		<button type="submit"  id="se-btn">查询</button>
+	</div>
+	<div id="map"></div>
+	<div class="control location">
+		<span class="icon-compass"></span>
+	</div>
+	<div class="control zoomout">
+		<span class="icon-zoom-out"></span>
+	</div>
+	<div class="control zoomin">
+		<span class="icon-zoom-in"></span>
+	</div>
+	<div class="control traffic">
+		<span class="icon-map2"></span>
+	</div>
+	<div class="setting" >
+		<div id="celue">
+			<span id="title">策略选择</span>
+			<div class="strag">
+				<ul class="s">
+					<li><input id="probability" name="group" type="radio"> 概率最大</li>
+					<li><input id="earning" name="group" type="radio"> 收益最大</li>
+					<li><input id="time" name="group" type="radio"> 时间最短</li>
+				</ul>
+			</div>
+		</div>
+		<div id="param">
+			<span id="title">参数设置</span>
+			<ul class="param">
+					<li>
+						<label>距离取值</label><input type="text" placeholder="500m">
+					</li>
+					<li>
+						<label>概率取值</label><input type="text" placeholder="0.8">
+					</li>
+					<li>
+						<label>收益取值</label><input type="text" placeholder="20min">
+					</li>		
+			</ul>
+		</div>
+	</div>
+	<script type="text/javascript">
+	$("#setting").click(function(){
+		return false;
+	});
+
+	$("#celue").click(function(){
+		return false;
+	});
+	$("#param").click(function(){
+		return false;
+	});
+	</script>
+</body>
+</html>
